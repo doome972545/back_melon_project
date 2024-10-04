@@ -1,4 +1,5 @@
 const connection = require('../config/db')
+
 module.exports = {
     addHouse: async (req, res) => {
         const data = await req.body
@@ -171,6 +172,7 @@ module.exports = {
         const data = await req.body;
         const user = await req.user
         // console.log(data)
+        // console.log(data)
         const updatedAt = new Date();
         const price = parseInt(data.cost)
         try {
@@ -194,6 +196,7 @@ module.exports = {
                                                         console.log(err)
                                                         return res.status(400).send(err.message);
                                                     }
+                                                    addChart.chart(data, user)
                                                     connection.query("UPDATE `activities_costs` SET `cost_all`= ? ,update_at=? WHERE activities_costs_id = ?",
                                                         [cost_a, updatedAt, data.selectActivities.activities_costs_id], (err, result) => {
                                                             if (err) throw console.log(err.message)
@@ -455,5 +458,66 @@ module.exports = {
             console.log(e.message)
             return res.status(500).send("Internal Server Error")
         }
+    },
+
+}
+
+const addChart = {
+    chart: async (data, user) => {
+        const thaiMonths = [
+            "มกราคม",  // January
+            "กุมภาพันธ์",  // February
+            "มีนาคม",  // March
+            "เมษายน",  // April
+            "พฤษภาคม",  // May
+            "มิถุนายน",  // June
+            "กรกฎาคม",  // July
+            "สิงหาคม",  // August
+            "กันยายน",  // September
+            "ตุลาคม",  // October
+            "พฤศจิกายน",  // November
+            "ธันวาคม"  // December
+        ];
+        // console.log(data)
+        // console.log(user)
+        const DateNow = new Date();
+        const month = DateNow.getMonth() + 1;  // เดือนปัจจุบัน (เพิ่ม 1 เพราะ getMonth() นับจาก 0)
+        const year = DateNow.getFullYear();  // ปีปัจจุบัน
+        await connection.query(
+            "SELECT * FROM chart WHERE cost_id = ? AND MONTH(created_at) = ? AND YEAR(created_at) = ?",
+            [data.cost_id, month, year],
+            (err, resultCost_id) => {
+                if (err) {
+                    console.log(err.message);
+                    return reject("เกิดข้อผิดพลาดในการดึงข้อมูล");
+                }
+                // console.log(resultCost_id);
+                var newCost = parseInt(data.cost);
+                if (resultCost_id.length > 0) {
+                    var oldCost = parseInt(resultCost_id[0].cost);
+                    const sum = newCost + oldCost;
+                    connection.query(
+                        "UPDATE `chart` SET `cost`= ? ,update_at = ? WHERE cost_id = ? AND MONTH(created_at) = ? AND YEAR(created_at) = ?",
+                        [sum, DateNow, data.cost_id, month, year],
+                        (err, resultCost_id) => {
+                            if (err) {
+                                console.log(err.message);
+                                return "เกิดข้อผิดพลาดในการอัปเดตข้อมูล";
+                            }
+                            return "อัปเดตข้อมูลเรียบร้อยแล้ว"
+                            // resolve("อัปเดตข้อมูลเรียบร้อยแล้ว");
+                        })
+                } else {
+                    connection.query("INSERT INTO `chart`(cost_id,cost,month,year) VALUES (?,?,?,?)",
+                        [data.cost_id, newCost, thaiMonths[month - 1], year + 543], (err, result) => {
+                            if (err) {
+                                console.log(err.message);
+                                return "เกิดข้อผิดพลาดในการบันทึกข้อมูล";
+                            }
+                            return "บันทึก chart ใหม่สำเร็จ"
+                        }
+                    )
+                }
+            })
     }
 }

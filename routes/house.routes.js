@@ -11,7 +11,7 @@ const { addHouse,
     edit_melon_costs,
     delete_melon_costs,
     end_process_for_greenhouse,
-    delete_greenhouse
+    delete_greenhouse,
 } = require('../controller/Process.controller');
 const authenticateToken = require('../middleware/authentication');
 

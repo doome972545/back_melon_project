@@ -100,6 +100,58 @@ module.exports = {
             console.log(e.message);
             return res.status(500).send("Internal Server Error");
         }
+    },
+    get_data_chart: async (req, res) => {
+        const data = await req.body
+        console.log(data)
+        try {
+            let sql = `
+                    SELECT 
+                        list.list_name, 
+                        COALESCE(SUM(chart.cost), 0) AS total_cost,
+                        GROUP_CONCAT(DISTINCT costs.cost_id) AS cost_ids  -- รวม cost_id โดยใช้ DISTINCT เพื่อไม่ให้ซ้ำ
+                    FROM 
+                        costs
+                    LEFT JOIN 
+                        chart ON chart.cost_id = costs.cost_id 
+                        AND MONTH(chart.created_at) IN (${data.months.map(() => '?').join(',')}) 
+                        AND YEAR(chart.created_at) = ?
+                    LEFT JOIN 
+                        list ON list.list_id = costs.list_id 
+                    WHERE 
+                        costs.canShow = true
+                    GROUP BY 
+                        list.list_name  -- กลุ่มตามชื่อรายการ
+                    HAVING 
+                        total_cost > 0;`;
+
+            const queryParams = [...data.months, data.year];  // สร้าง array ของ parameters สำหรับ SQL
+
+            connection.query(sql, queryParams, (err, result) => {
+                if (err) {
+                    console.error(err.message);  // แสดงข้อผิดพลาดที่เกิดขึ้น
+                    return res.status(500).json({ error: 'Internal Server Error' });  // ส่ง error response
+                }
+                console.log(result);  // แสดงผลลัพธ์ที่ได้จาก query
+                res.json(result);  // ส่งผลลัพธ์กลับไปที่ client
+            });
+            // connection.query(
+            //     "SELECT chart.cost AS cost, list.list_name FROM costs  JOIN chart ON chart.cost_id = costs.cost_id AND MONTH(chart.created_at) = ? AND YEAR(chart.created_at) = ? LEFT JOIN list ON list.list_id = costs.list_id WHERE costs.canShow = true;",
+            //     // [data.month, data.year],
+            //     [10, 2024],
+            //     (err, result) => {
+            //         if (err) {
+            //             console.error(err.message);  // แสดงข้อผิดพลาดที่เกิดขึ้น
+            //             return res.status(500).json({ error: 'Internal Server Error' });  // ส่ง error response
+            //         }
+            //         console.log(result);  // แสดงผลลัพธ์ที่ได้จาก query
+            //         res.json(result);  // ส่งผลลัพธ์กลับไปที่ client
+            //     }
+            // );
+        } catch (e) {
+            console.log(e.message)
+            return res.status(500).send("Internal Server Error")
+        }
     }
 
 }
