@@ -132,7 +132,6 @@ module.exports = {
                     console.error(err.message);  // แสดงข้อผิดพลาดที่เกิดขึ้น
                     return res.status(500).json({ error: 'Internal Server Error' });  // ส่ง error response
                 }
-                console.log(result);  // แสดงผลลัพธ์ที่ได้จาก query
                 res.json(result);  // ส่งผลลัพธ์กลับไปที่ client
             });
             // connection.query(
