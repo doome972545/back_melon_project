@@ -21,7 +21,7 @@ module.exports = {
         const data = await req.body
         try {
             await connection.query(
-                "SELECT hg.*,pt.planting_name FROM melon_greenhouse hg JOIN planting_type pt ON hg.planting_type_id = pt.planting_id WHERE user_id = ? ORDER BY hg.create_house_at ASC",
+                "SELECT hg.*,pt.planting_name FROM melon_greenhouse hg JOIN planting_type pt ON hg.planting_type_id = pt.planting_id WHERE user_id = ? ORDER BY hg.create_at ASC",
                 [data.user_id], (err, result, field) => {
                     if (err) {
                         console.log(err)
