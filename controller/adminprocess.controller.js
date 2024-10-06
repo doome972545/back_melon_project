@@ -103,7 +103,6 @@ module.exports = {
     },
     get_data_chart: async (req, res) => {
         const data = await req.body
-        console.log(data)
         try {
             let sql = `
                     SELECT 
@@ -132,7 +131,7 @@ module.exports = {
                     console.error(err.message);  // แสดงข้อผิดพลาดที่เกิดขึ้น
                     return res.status(500).json({ error: 'Internal Server Error' });  // ส่ง error response
                 }
-                res.json(result);  // ส่งผลลัพธ์กลับไปที่ client
+                res.status(200).json(result);  // ส่งผลลัพธ์กลับไปที่ client
             });
             // connection.query(
             //     "SELECT chart.cost AS cost, list.list_name FROM costs  JOIN chart ON chart.cost_id = costs.cost_id AND MONTH(chart.created_at) = ? AND YEAR(chart.created_at) = ? LEFT JOIN list ON list.list_id = costs.list_id WHERE costs.canShow = true;",
