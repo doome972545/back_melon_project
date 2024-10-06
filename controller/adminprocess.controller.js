@@ -3,7 +3,7 @@ const connection = require('../config/db')
 module.exports = {
     getUsers: async (req, res) => {
         try {
-            const result = await connection.query("SELECT u.id, u.firstName, u.lastName, u.fullName,u.update_data,u.profile_info, u.phone, u.status,u.create_At, COUNT(m.user_id) AS melon_count, SUM(m.cost) AS total_cost, COUNT(CASE WHEN m.status = 'start' THEN 1 END) AS active_melon_count ,COUNT(CASE WHEN m.status = 'end' THEN 1 END) AS inactive_melon_count  FROM users u LEFT JOIN melon_greenhouse m ON u.id = m.user_id WHERE u.status != 'admin' GROUP BY u.id, u.firstName, u.lastName, u.fullName, u.phone, u.status, u.create_At; ",
+            const result = await connection.query("SELECT u.id, u.firstName, u.lastName, u.fullName,u.update_data,u.profile_info, u.phone, u.status,u.create_At, COUNT(m.user_id) AS melon_count, SUM(m.cost) AS total_cost, SUM(CASE WHEN m.status = 'start' THEN m.cost ELSE 0 END) AS total_cost_start,COUNT(CASE WHEN m.status = 'start' THEN 1 END) AS active_melon_count ,COUNT(CASE WHEN m.status = 'end' THEN 1 END) AS inactive_melon_count  FROM users u LEFT JOIN melon_greenhouse m ON u.id = m.user_id WHERE u.status != 'admin' GROUP BY u.id, u.firstName, u.lastName, u.fullName, u.phone, u.status, u.create_At; ",
                 (err, result) => {
                     if (err) throw console.log(err.message)
                     const ids = result.map(user => user.id)
