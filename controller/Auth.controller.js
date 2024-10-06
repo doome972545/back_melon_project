@@ -2,7 +2,7 @@ const connection = require('../config/db')
 const jwt = require('jsonwebtoken');
 const fs = require('fs-extra');
 const path = require('path');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs'); // เปลี่ยนเป็น bcryptjs
 const saltRounds = 10;
 
 module.exports = {
