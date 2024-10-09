@@ -6,8 +6,8 @@ const bcrypt = require('bcryptjs'); // เปลี่ยนเป็น bcryptj
 const saltRounds = 10;
 
 module.exports = {
-    login: (req, res) => {
-        const { username, password } = req.body;
+    login: async (req, res) => {
+        const { username, password } = await req.body;
         // Validate user credentials
         connection.query('SELECT * FROM users WHERE username = ?', [username], async (err, results) => {
             if (err) {
@@ -43,6 +43,7 @@ module.exports = {
         try {
             const imageUrl = req.file ? req.file.path : null; // รับ URL ของรูปที่อัพโหลดจาก Cloudinary
             const data = await req.body;
+            const publicId = req.file ? req.file.filename : null; 
             if (req.file) {
                 var fileName = await req.file.filename;
             }
@@ -57,22 +58,22 @@ module.exports = {
                 }
 
                 if (result.length > 0) {
-                    if (req.file) {
-                        const filePath = path.join(__dirname, '../uploads', fileName);
-                        try {
-                            await fs.remove(filePath); // ลบไฟล์โดยใช้ fs-extra
+                    if (req.file && publicId) {
+                        // ลบรูปภาพจาก Cloudinary
+                        cloudinary.uploader.destroy(publicId, function (error, result) {
+                            if (error) {
+                                console.error('Error deleting image from Cloudinary:', error);
+                                return res.status(500).json({ message: 'Failed to delete image from Cloudinary', error: error.message });
+                            }
                             return res.status(409).json({ message: 'มีชื่อผู้ใช้แล้ว' });
-                        } catch (err) {
-                            console.error(err);
-                            return res.status(500).json({ message: 'ลบไฟล์ไม่สำเร็จ', error: err.message });
-                        }
+                        });
                     } else {
                         return res.status(409).json({ message: 'มีชื่อผู้ใช้แล้ว' });
                     }
                 } else {
 
                     const hashedPassword = await bcrypt.hash(data.password, saltRounds);
-                    
+
                     connection.query("INSERT INTO users (username,password,firstName,lastName,phone,fullName,profile_info) VALUES (?,?,?,?,?,?,?)",
                         [
                             data.username,
