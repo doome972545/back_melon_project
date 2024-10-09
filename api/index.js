@@ -12,6 +12,17 @@ app.use(cors())
 app.use(express.json());
 app.use(express.static('./uploads'))
 
+// // Require the cloudinary library
+// const cloudinary = require('cloudinary').v2;
+
+// // Return "https" URLs by setting secure: true
+// cloudinary.config({
+//     secure: true
+// });
+
+// // Log the configuration
+// console.log(cloudinary.config());
+
 app.use('/api/house', fertilizer);
 app.use('/api/auth', auth);
 app.use('/api/admin', admin);
