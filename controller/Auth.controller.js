@@ -16,15 +16,15 @@ module.exports = {
             if (results.length === 0) {
                 return res.status(401).json({ message: 'ไม่พบชื่อผู้ใช้' });
             }
-    
+
             const user = results[0];
-            
+
             // ตรวจสอบ password ที่ถูก hash ไว้
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
                 return res.status(401).json({ message: 'Password ไม่ถูกต้อง' });
             }
-    
+
             const token = jwt.sign({ user_id: user.id, status: user.status }, process.env.JWT_KEY);
             res.json({
                 token: token,
@@ -37,10 +37,11 @@ module.exports = {
             });
         });
     },
-    
+
 
     register: async (req, res) => {
         try {
+            const imageUrl = req.file ? req.file.path : null; // รับ URL ของรูปที่อัพโหลดจาก Cloudinary
             const data = await req.body;
             if (req.file) {
                 var fileName = await req.file.filename;
@@ -69,9 +70,9 @@ module.exports = {
                         return res.status(409).json({ message: 'มีชื่อผู้ใช้แล้ว' });
                     }
                 } else {
-                    // ทำการ hash password ก่อนบันทึกลงฐานข้อมูล
-                    const hashedPassword = await bcrypt.hash(data.password, saltRounds);
 
+                    const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+                    
                     connection.query("INSERT INTO users (username,password,firstName,lastName,phone,fullName,profile_info) VALUES (?,?,?,?,?,?,?)",
                         [
                             data.username,
@@ -80,7 +81,7 @@ module.exports = {
                             data.lastName,
                             data.phone,
                             data.fullName,
-                            fileName ? fileName : null
+                            imageUrl,
                         ], (err, result) => {
                             if (err) return res.status(500).send({ message: "Error inserting" });
                             return res.status(200).json({ message: 'ลงทะเบียนสำเร็จ' });

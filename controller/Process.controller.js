@@ -40,6 +40,7 @@ module.exports = {
                         return res.status(400).send(err.message);
                     }
                     connection.query("select COUNT(CASE WHEN status = 'start' THEN 1 END) AS start_melon_count from melon_greenhouse where user_id = ?",
+                        
                         [req.user.user_id], (err, resultSum) => {
                             return res.status(200).json({ data: result, sum: resultSum });
                         })
