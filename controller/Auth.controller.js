@@ -11,7 +11,9 @@ module.exports = {
         // Validate user credentials
         connection.query('SELECT * FROM users WHERE username = ?', [username], async (err, results) => {
             if (err) {
-                return res.status(500).json({ message: 'Database query failed' });
+                console.log("Database query failed:", err.message); // เพิ่ม log
+                return res.status(500).json({ message: 'Database query failed', error: err.message }); // ส่ง error message ไปที่ response เพื่อ debug
+                
             }
             if (results.length === 0) {
                 return res.status(401).json({ message: 'ไม่พบชื่อผู้ใช้' });
@@ -43,7 +45,7 @@ module.exports = {
         try {
             const imageUrl = req.file ? req.file.path : null; // รับ URL ของรูปที่อัพโหลดจาก Cloudinary
             const data = await req.body;
-            const publicId = req.file ? req.file.filename : null; 
+            const publicId = req.file ? req.file.filename : null;
             if (req.file) {
                 var fileName = await req.file.filename;
             }
