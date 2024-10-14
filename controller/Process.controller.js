@@ -430,6 +430,7 @@ module.exports = {
     },
     delete_greenhouse: async (req, res) => {
         const data = await req.body
+        console.log(data)
         try {
             await connection.query("DELETE FROM melon_costs_fv WHERE house_id = ?",
                 [data.house_id], (err, result) => {

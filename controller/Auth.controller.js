@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const bcrypt = require('bcryptjs'); // เปลี่ยนเป็น bcryptjs
 const saltRounds = 10;
+const cloudinary = require('cloudinary').v2;
 
 module.exports = {
     login: async (req, res) => {
@@ -14,7 +15,7 @@ module.exports = {
                 console.log("Database query failed:", err.message); // เพิ่ม log
                 return res.status(500).json({ message: 'Database query failed', error: err.message }); // ส่ง error message ไปที่ response เพื่อ debug
                 
-            }
+            }   
             if (results.length === 0) {
                 return res.status(401).json({ message: 'ไม่พบชื่อผู้ใช้' });
             }

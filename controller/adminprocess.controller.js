@@ -150,6 +150,85 @@ module.exports = {
             console.log(e.message)
             return res.status(500).send("Internal Server Error")
         }
+    },
+    get_costs: async (req, res) => {
+        try {
+            const sql = `
+                        SELECT c.*, a.*,l.*
+                        FROM costs c
+                        INNER JOIN activities a ON c.activities_id = a.activity_id
+                        JOIN list l ON c.list_id = l.list_id
+                        `;
+            connection.query(sql, (err, result) => {
+                if (err) {
+                    console.error(err.message);  // แสดงข้อผิดพลาดที่เกิดขึ้น
+                    return res.status(500).json({ error: 'Internal Server Error' });  // ส่ง error response
+                }
+                res.status(200).json(result)
+            })
+        } catch (e) {
+            console.log(e.message)
+            return res.status(500).send("Internal Server Error")
+        }
+    },
+    edit_costs: async (req, res) => {
+        const data = await req.body
+        try {
+            if (!data.list_id || !data.list_name || !data.cost_id) {
+                return res.status(400).send("Missing required fields");
+            }
+            const listSql = `UPDATE list SET list_name = ? WHERE list_id = ?`;
+            const costsSql = `
+            UPDATE costs 
+            SET cost_sand = ?, cost_clay = ?, cost_pots = ?, cost_bags = ?, canShow = ?
+            WHERE cost_id = ?
+            `;
+            await connection.query(listSql, [data.list_name, data.list_id]);
+            await connection.query(costsSql, [
+                data.cost_sand ?? null, // หากเป็น null ก็ให้ใส่ค่า null
+                data.cost_clay ?? null,
+                data.cost_pots ?? null,
+                data.cost_bags ?? null,
+                data.canShow,
+                data.cost_id
+            ], (err, result) => {
+                if (err) throw err;
+                return res.status(200).send("Data updated successfully");
+            });
+        } catch (e) {
+            console.log(e.message)
+            return res.status(500).send("Internal Server Error")
+        }
+    },
+    create_costs: async (req, res) => {
+        const data = await req.body
+        try {
+            const insertListSql = `INSERT INTO list (list_name) VALUES (?)`
+            const listSql = `SELECT list_id FROM list WHERE list_name = ?`
+            const insertCosts = `
+            INSERT INTO costs ( activities_id , list_id , cost_clay , cost_sand , cost_bags , cost_pots,canShow) VALUES (?,?,?,?,?,?,?)
+            `
+            await connection.query(insertListSql, [data.list_name], (err, result) => {
+                connection.query(listSql, [data.list_name], (err, resultselect) => {
+                    const list_id = resultselect[0].list_id
+                    connection.query(insertCosts, [
+                        data.activity_id,
+                        list_id,
+                        data.cost_sand ?? null, // หากเป็น null ก็ให้ใส่ค่า null
+                        data.cost_clay ?? null,
+                        data.cost_pots ?? null,
+                        data.cost_bags ?? null,
+                        data.canShow
+                    ], (err, resultInsert) => {
+                        if (err) throw err.message;
+                        return res.status(200).json({ message: "บันทึกข้อมูลเรียบร้อยแล้ว" })
+                    })
+                })
+            })
+        } catch (e) {
+            console.log(e.message)
+            return res.status(500).send("Internal Server Error")
+        }
     }
 
 }
