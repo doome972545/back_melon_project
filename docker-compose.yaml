@@ -18,8 +18,6 @@ services:
       DB_DATABASE: melon_project_melon
       DB_PORT: 3306
       SESSION_SECRET: 9c0f28704ffa2d08c323e77e7a88097fd9af392c72fded4bbd23cc30373114b7
-    env_file:
-      - .env
     depends_on:
       - db
 
