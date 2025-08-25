@@ -37,7 +37,7 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
-      - ./project_melon.sql:/docker-entrypoint-initdb.d/project_melon.sql:ro
+      - ./project_melon.sql:/docker-entrypoint-initdb.d/project_melon.sql
 
 volumes:
   db_data:
