@@ -1,3 +1,6 @@
+ALTER USER 'melon'@'%' IDENTIFIED WITH mysql_native_password BY 'doome972545';
+FLUSH PRIVILEGES;
+
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
