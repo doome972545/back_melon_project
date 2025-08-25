@@ -39,6 +39,11 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./project_melon.sql:/docker-entrypoint-initdb.d/project_melon.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
 volumes:
   db_data:
