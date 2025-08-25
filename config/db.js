@@ -1,19 +1,21 @@
 const dotenv = require("dotenv").config();
 const mysql = require("mysql");
+
 const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    port: process.env.DB_PORT
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  port: process.env.DB_PORT,
 });
 
+// ตรวจสอบการเชื่อมต่อ
 connection.connect((err) => {
-    if (err) {
-        console.log("Error connecting to database", err);
-        return;
-    }
-    console.log("Connecting to database successfully!");
+  if (err) {
+    console.error("❌ ไม่สามารถเชื่อมต่อฐานข้อมูล:", err.message);
+  } else {
+    console.log("✅ เชื่อมต่อฐานข้อมูลสำเร็จ");
+  }
 });
 
 module.exports = connection;

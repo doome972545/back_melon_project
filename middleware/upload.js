@@ -28,10 +28,10 @@ const uploadMiddleware = (req, res, next) => {
         }
 
         // ตรวจสอบว่ามีการอัพโหลดไฟล์หรือไม่
-        if (!req.file) {
-            // ถ้าไม่มีไฟล์ให้ไปลงทะเบียนต่อ
-            return next(); // ถ้ามีรูปภาพ อัปโหลดไปยัง Cloudinary
-        }
+    if (!req.file) {
+        // ถ้าไม่มีไฟล์ให้ไปลงทะเบียนต่อ
+        return next(); // ถ้ามีรูปภาพ อัปโหลดไปยัง Cloudinary
+    }
 
         // เก็บ URL ของรูปที่อัพโหลดใน req.file.path
         req.file.path = req.file.path; // เก็บ URL รูปใน req.file.path

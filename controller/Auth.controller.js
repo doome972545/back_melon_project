@@ -47,7 +47,7 @@ module.exports = {
             const imageUrl = req.file ? req.file.path : null; // รับ URL ของรูปที่อัพโหลดจาก Cloudinary
             const data = await req.body;
             const publicId = req.file ? req.file.filename : null;
-            if (req.file) {
+            if (req.file) {     
                 var fileName = await req.file.filename;
             }
             if (!data.username) {
