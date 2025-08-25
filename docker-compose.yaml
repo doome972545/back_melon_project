@@ -6,6 +6,18 @@ services:
     container_name: backend_melon
     ports:
       - "5000:5000"
+    restart: always
+    environment:
+      JWT_SECRET: Melon_project
+      CLOUD_NAME: dzvx53cac
+      CLOUD_API_KEY: 952845629496471
+      CLOUD_API_SECRET: wDTBTwdg3l8qtGDJEO9AYidqsdU
+      DB_HOST: db
+      DB_USER: melon
+      DB_PASSWORD: doome972545
+      DB_DATABASE: melon_project_melon
+      DB_PORT: 3306
+      SESSION_SECRET: 9c0f28704ffa2d08c323e77e7a88097fd9af392c72fded4bbd23cc30373114b7
     env_file:
       - .env
     depends_on:
@@ -24,6 +36,7 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+      - ./project_melon.sql:/docker-entrypoint-initdb.d/project_melon.sql:ro
 
 volumes:
   db_data:
