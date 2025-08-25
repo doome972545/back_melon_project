@@ -1,4 +1,4 @@
-version: "3.8"
+version: "2.4"
 
 services:
   backend:
@@ -8,19 +8,14 @@ services:
       - "5000:5000"
     restart: always
     environment:
-      JWT_SECRET: Melon_project
-      CLOUD_NAME: dzvx53cac
-      CLOUD_API_KEY: 952845629496471
-      CLOUD_API_SECRET: wDTBTwdg3l8qtGDJEO9AYidqsdU
       DB_HOST: db
       DB_USER: melon
       DB_PASSWORD: doome972545
       DB_DATABASE: melon_project_melon
       DB_PORT: 3306
-      SESSION_SECRET: 9c0f28704ffa2d08c323e77e7a88097fd9af392c72fded4bbd23cc30373114b7
     depends_on:
       db:
-        condition: service_healthy # รอจน db ready
+        condition: service_healthy
     volumes:
       - .:/app
       - /app/node_modules
